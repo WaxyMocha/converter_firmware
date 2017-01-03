@@ -54,6 +54,7 @@ ISR(EDMA_CH0_vect)
 {
 	if (EDMA.CH0.ADDR == (uint16_t)&voltage)
 	{
+		reCalc = true;
 		EDMA.CH0.ADDR = (uint16_t)&current;
 		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc;
 	}
@@ -74,7 +75,7 @@ ISR(EDMA_CH0_vect)
 	}
 	ADCA.CTRLA |= ADC_START_bm;
 }
-ISR (PORTC_INT_vect)
-{
-	button = true;
-}
+//ISR (PORTC_INT_vect)
+// {
+// 	button = true;
+// }
