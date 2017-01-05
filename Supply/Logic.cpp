@@ -17,8 +17,8 @@ uint16_t input_voltage = 1396;
 uint16_t input_current = 100;
 
 float voltage_max = 120;
-float current_max = 20;
-bool src = true;//true - voltage, false - current
+float current_max = 10;
+bool src = false;//true - voltage, false - current
 uint8_t select = 0;//0 - max voltage, 1- max current, 2 - voltage source, 3 - current source, 4 - next
 bool selected = false;
 uint8_t page = 0;
@@ -27,56 +27,34 @@ void PWM_control ()
 {
 	float voltage_temp = ((voltage_max*4096)/150);
 	float current_temp = ((current_max*4096)/100);
-	if (src)
+	
+	if (TCD5.CCA == 0xFF && (TCD5.CTRLE & ~TC5_CCBMODE0_bm))
 	{
-		if (((voltage_max*4096)/150) < input_voltage)
+		PWM_mode(true);
+	}
+	else if (TCD5.CCB == 0x0 && (TCD5.CTRLE & ~TC5_CCAMODE0_bm))
+	{
+		PWM_mode(false);
+	}
+	if (voltage_temp > voltage && current_temp > current)
+	{
+		if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA < 0xFF)
 		{
-			if (TCD5.CTRLE & ~TC5_CCAMODE0_bm)
-			{
-				PWM_mode(false);
-			}
-		} 
-		else
-		{
-			if (TCD5.CTRLE & ~TC5_CCBMODE0_bm)
-			{
-				PWM_mode(true);
-			}
+			TCD5.CCA++;
 		}
-		if (voltage_temp > voltage && current_temp > current)
+		if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB < 0xFF)
 		{
-			if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA < 0xFF)
-			{
-				TCD5.CCA++;
-			}
-			if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB < 0xFF)
-			{
-				TCD5.CCB++;
-			}
+			TCD5.CCB++;
 		}
-		else
-		{
-		if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA > 0x0)
-			{
-				TCD5.CCA--;
-			}
-			else if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB > 0x0)
-			{
-				TCD5.CCB--;
-			}
-		}
-		
 	}
 	else
 	{
-		if (current_temp > current && voltage_temp < voltage)
-		{
-			TCD5.CCA++;
-			TCD5.CCB++;
-		}
-		else
+		if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA > 0x0)
 		{
 			TCD5.CCA--;
+		}
+		else if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB > 0x0)
+		{
 			TCD5.CCB--;
 		}
 	}
@@ -85,6 +63,7 @@ void PWM_mode(bool mode) //0- buck 1-boost
 {
 	if (!mode)
 	{
+		TCD5.CCA = 0;
 		TCD5.CTRLE |= TC5_CCAMODE0_bm;
 		PORTD.PIN4CTRL &= ~PORT_OPC_PULLUP_gc;
 		
@@ -93,6 +72,7 @@ void PWM_mode(bool mode) //0- buck 1-boost
 	} 
 	else
 	{
+		TCD5.CCB = 0;
 		TCD5.CTRLE |= TC5_CCBMODE0_bm;
 		PORTD.PIN5CTRL &= ~PORT_OPC_PULLDOWN_gc;
 		
