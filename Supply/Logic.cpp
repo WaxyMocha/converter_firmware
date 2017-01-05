@@ -17,7 +17,7 @@ uint16_t input_voltage = 1396;
 uint16_t input_current = 100;
 
 float voltage_max = 120;
-uint16_t current_max = 20;
+float current_max = 20;
 bool src = true;//true - voltage, false - current
 uint8_t select = 0;//0 - max voltage, 1- max current, 2 - voltage source, 3 - current source, 4 - next
 bool selected = false;
@@ -25,6 +25,8 @@ uint8_t page = 0;
 
 void PWM_control ()
 {
+	float voltage_temp = ((voltage_max*4096)/150);
+	float current_temp = ((current_max*4096)/100);
 	if (src)
 	{
 		if (((voltage_max*4096)/150) < input_voltage)
@@ -41,25 +43,24 @@ void PWM_control ()
 				PWM_mode(true);
 			}
 		}
-
-		if ((((voltage_max*4096)/150) > voltage) && (((current_max*4096)/100) > current))
+		if (voltage_temp > voltage && current_temp > current)
 		{
-			if ((TCD5.CTRLE & TC5_CCAMODE0_bm))
+			if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA < 0xFF)
 			{
 				TCD5.CCA++;
 			}
-			if ((TCD5.CTRLE & TC5_CCBMODE0_bm))
+			if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB < 0xFF)
 			{
 				TCD5.CCB++;
 			}
 		}
 		else
 		{
-		if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA >= 0x0)
+		if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA > 0x0)
 			{
 				TCD5.CCA--;
 			}
-			else if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB >= 0x0)
+			else if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB > 0x0)
 			{
 				TCD5.CCB--;
 			}
@@ -68,7 +69,7 @@ void PWM_control ()
 	}
 	else
 	{
-		if ((current_max/100)*4096 > current && ((voltage_max/150)*4096) < voltage)
+		if (current_temp > current && voltage_temp < voltage)
 		{
 			TCD5.CCA++;
 			TCD5.CCB++;

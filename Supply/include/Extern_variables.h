@@ -17,15 +17,11 @@ extern uint16_t input_voltage;
 extern uint16_t input_current;
 
 extern float voltage_max;
-extern uint16_t current_max;
+extern float current_max;
 extern bool src;
 
 extern const uint8_t first[];
 extern const uint8_t second[];
-extern const uint8_t source[];
-extern const uint8_t voltage_source[];
-extern const uint8_t current_source[];
-extern const uint8_t ok[];
 
 extern uint8_t screen[512];
 extern uint16_t screen_counter;
