@@ -16,7 +16,7 @@ extern uint16_t current;
 extern uint16_t input_voltage;
 extern uint16_t input_current;
 
-extern uint16_t voltage_max;
+extern float voltage_max;
 extern uint16_t current_max;
 extern bool src;
 

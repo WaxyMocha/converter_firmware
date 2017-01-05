@@ -16,7 +16,7 @@
 
 void Init ();
 
-volatile bool reCalc = false;
+volatile bool reCalc = true;
 
 int main(void)
 {
@@ -27,8 +27,8 @@ int main(void)
     {
 		if (reCalc)
 		{
-			reMake = true;
-			reCalc = false;
+			//reMake = true;
+			//reCalc = false;
 			PWM_control ();
 		}
 		if (TCC5.CNT != 0)
@@ -40,7 +40,7 @@ int main(void)
 		if (reMake)
 		{
 			reMake = false;
-			make_screen ();
+			//make_screen ();
 		}
 
     }
@@ -109,9 +109,38 @@ void Init ()
 	PR.PRPD = PR_USART0_bm;
 
 	OSC.CTRL = OSC_RC32MEN_bm;
-	while (OSC.STATUS & OSC_RC32MEN_bm);
+	while (OSC.STATUS & !OSC_RC32MRDY_bm);
 
 	Display_init();
 
+	sei();
+
 	ADCA.CTRLA |= ADC_START_bm;
 }
+ISR (TWIC_TWIM_vect);
+ISR(EDMA_CH0_vect)
+{
+	if (EDMA.CH0.ADDR == (uint16_t)&voltage)
+	{
+		reCalc = true;
+		EDMA.CH0.ADDR = (uint16_t)&current;
+		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN1_gc;
+	}
+	else if (EDMA.CH0.ADDR == (uint16_t)&current)
+	{
+		EDMA.CH0.ADDR = (uint16_t)&input_voltage;
+		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN2_gc;
+	}
+	else if (EDMA.CH0.ADDR == (uint16_t)&input_voltage)
+	{
+		EDMA.CH0.ADDR = (uint16_t)&input_current;
+		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN3_gc;
+	}
+	else
+	{
+		EDMA.CH0.ADDR = (uint16_t)&voltage;
+		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;
+	}
+	ADCA.CTRLA |= ADC_START_bm;
+}
+ISR (PORTC_INT_vect);

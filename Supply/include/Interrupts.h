@@ -10,8 +10,8 @@
 #ifndef INTERRUPTS_H_
 #define INTERRUPTS_H_
 
-ISR (TWIC_TWIM_vect);
-ISR (EDMA_CH0_vect);
-ISR (PORTC_INT_vect);
+// ISR (TWIC_TWIM_vect);
+// ISR (EDMA_CH0_vect);
+// ISR (PORTC_INT_vect);
 
 #endif /* INTERRUPTS_H_ */

@@ -9,13 +9,15 @@
 #include "include/Extern_variables.h"
 #include "include/Logic.h"
 
+void PWM_mode(bool mode);
+
 uint16_t voltage = 0;
 uint16_t current = 0;
-uint16_t input_voltage = 0;
-uint16_t input_current = 0;
+uint16_t input_voltage = 1396;
+uint16_t input_current = 100;
 
-uint16_t voltage_max = 0;
-uint16_t current_max = 0;
+float voltage_max = 120;
+uint16_t current_max = 20;
 bool src = true;//true - voltage, false - current
 uint8_t select = 0;//0 - max voltage, 1- max current, 2 - voltage source, 3 - current source, 4 - next
 bool selected = false;
@@ -25,16 +27,44 @@ void PWM_control ()
 {
 	if (src)
 	{
-		if (((voltage_max/150)*4096) > voltage && (current_max/100)*4096 < current)
+		if (((voltage_max*4096)/150) < input_voltage)
 		{
-			TCD5.CCA++;
-			TCD5.CCB++;
+			if (TCD5.CTRLE & ~TC5_CCAMODE0_bm)
+			{
+				PWM_mode(false);
+			}
+		} 
+		else
+		{
+			if (TCD5.CTRLE & ~TC5_CCBMODE0_bm)
+			{
+				PWM_mode(true);
+			}
+		}
+
+		if ((((voltage_max*4096)/150) > voltage) && (((current_max*4096)/100) > current))
+		{
+			if ((TCD5.CTRLE & TC5_CCAMODE0_bm))
+			{
+				TCD5.CCA++;
+			}
+			if ((TCD5.CTRLE & TC5_CCBMODE0_bm))
+			{
+				TCD5.CCB++;
+			}
 		}
 		else
 		{
-			TCD5.CCA--;
-			TCD5.CCB--;
+		if ((TCD5.CTRLE & TC5_CCAMODE0_bm) && TCD5.CCA >= 0x0)
+			{
+				TCD5.CCA--;
+			}
+			else if ((TCD5.CTRLE & TC5_CCBMODE0_bm) && TCD5.CCB >= 0x0)
+			{
+				TCD5.CCB--;
+			}
 		}
+		
 	}
 	else
 	{
@@ -50,15 +80,35 @@ void PWM_control ()
 		}
 	}
 }
+void PWM_mode(bool mode) //0- buck 1-boost
+{
+	if (!mode)
+	{
+		TCD5.CTRLE |= TC5_CCAMODE0_bm;
+		PORTD.PIN4CTRL &= ~PORT_OPC_PULLUP_gc;
+		
+		TCD5.CTRLE &= ~TC5_CCBMODE0_bm;
+		PORTD.PIN5CTRL |= PORT_OPC_PULLDOWN_gc;
+	} 
+	else
+	{
+		TCD5.CTRLE |= TC5_CCBMODE0_bm;
+		PORTD.PIN5CTRL &= ~PORT_OPC_PULLDOWN_gc;
+		
+		TCD5.CTRLE &= ~TC5_CCAMODE0_bm;
+		PORTD.PIN4CTRL |= PORT_OPC_PULLUP_gc;
+	}
+}
 void Encoder_logic ()
 {
-	if (TCC5.CNT>>15)//greater than 2^8
+	uint16_t CNT = TCC5.CNT;
+	if (CNT>>15)//greater than 2^8
 	{
 		if (selected && (select == 0 || select == 1) && page == 0)
 		{
 			if (select == 0)
 			{
-				voltage_max -= (TCC5.CNT/4);
+				voltage_max -= (CNT/4);
 				if (voltage_max < 0)
 				{
 					voltage_max = 0;
@@ -66,7 +116,7 @@ void Encoder_logic ()
 			}
 			else
 			{
-				current_max -= (TCC5.CNT/4);
+				current_max -= (CNT/4);
 				if (current_max < 100)
 				{
 					current_max = 0;
@@ -75,7 +125,7 @@ void Encoder_logic ()
 		}
 		else
 		{
-			for (uint8_t i = ((~((TCC5.CNT/4))+1)%5); i < 1; i--)
+			for (uint8_t i = ((~((CNT/4))+1)%5); i < 1; i--)
 			{
 				if (select == 0)
 				{
@@ -94,7 +144,7 @@ void Encoder_logic ()
 		{
 			if (select == 0)
 			{
-				voltage_max += (TCC5.CNT/4);
+				voltage_max += (CNT/4);
 				if (voltage_max > 150)
 				{
 					voltage_max = 150;
@@ -102,7 +152,7 @@ void Encoder_logic ()
 			}
 			else
 			{
-				current_max += (TCC5.CNT/4);
+				current_max += (CNT/4);
 				if (current_max > 100)
 				{
 					current_max = 100;
@@ -111,7 +161,7 @@ void Encoder_logic ()
 		}
 		else
 		{
-			select += (TCC5.CNT/4)%5;
+			select += (CNT/4)%5;
 		}
 	}
 	if (PORTC.INTFLAGS & PORT_INT3IF_bm)
