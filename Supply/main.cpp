@@ -16,17 +16,33 @@
 
 void Init ();
 
+volatile bool reCalc = false;
+
 int main(void)
 {
     Init();
 	
-
+	bool reMake = true;
     while (1) 
     {
-		PWM_control ();
-		Encoder_logic ();
+		if (reCalc)
+		{
+			reMake = true;
+			reCalc = false;
+			PWM_control ();
+		}
+		if (TCC5.CNT != 0)
+		{
+			reMake = true;
+			TCC5.CNT = 0;
+			Encoder_logic ();
+		}
+		if (reMake)
+		{
+			reMake = false;
+			make_screen ();
+		}
 
-		make_screen ();
     }
 }
 
@@ -34,7 +50,7 @@ void Init ()
 {
 	PMIC.CTRL = PMIC_RREN_bm | PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
 
- 	PORTC.INTCTRL = PORT_INTLVL_LO_gc;
+ 	//PORTC.INTCTRL = PORT_INTLVL_LO_gc; //Need to check if flag will be set
  	PORTC.INTMASK |= PIN2_bm;
 	PORTC.PIN0CTRL = PORT_ISC_LEVEL_gc;
 	PORTC.PIN1CTRL = PORT_ISC_LEVEL_gc;
@@ -86,6 +102,11 @@ void Init ()
 	
 	CLK.CTRL = CLK_SCLKSEL0_bm;
 	CLK.RTCCTRL |= CLK_RTCSRC1_bm | CLK_RTCEN_bm;
+
+	PR.PRGEN = PR_XCL_bm;
+	PR.PRPA = PR_DAC_bm | PR_AC_bm;
+	PR.PRPC = PR_USART0_bm | PR_SPI_bm | PR_HIRES_bm;
+	PR.PRPD = PR_USART0_bm;
 
 	OSC.CTRL = OSC_RC32MEN_bm;
 	while (OSC.STATUS & OSC_RC32MEN_bm);

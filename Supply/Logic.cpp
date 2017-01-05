@@ -13,7 +13,6 @@ uint16_t voltage = 0;
 uint16_t current = 0;
 uint16_t input_voltage = 0;
 uint16_t input_current = 0;
-volatile bool button = false;
 
 uint16_t voltage_max = 0;
 uint16_t current_max = 0;
@@ -53,75 +52,71 @@ void PWM_control ()
 }
 void Encoder_logic ()
 {
-	if (TCC5.CNT != 0)
+	if (TCC5.CNT>>15)//greater than 2^8
 	{
-		if (TCC5.CNT>>15)//greater than 2^8
+		if (selected && (select == 0 || select == 1) && page == 0)
 		{
-			if (selected && (select == 0 || select == 1) && page == 0)
+			if (select == 0)
 			{
-				if (select == 0)
+				voltage_max -= (TCC5.CNT/4);
+				if (voltage_max < 0)
 				{
-					voltage_max -= (TCC5.CNT/4);
-					if (voltage_max < 0)
-					{
-						voltage_max = 0;
-					}
-				}
-				else
-				{
-					current_max -= (TCC5.CNT/4);
-					if (current_max < 100)
-					{
-						current_max = 0;
-					}
+					voltage_max = 0;
 				}
 			}
 			else
 			{
-				for (uint8_t i = ((~((TCC5.CNT/4))+1)%5); i < 1; i--)
+				current_max -= (TCC5.CNT/4);
+				if (current_max < 100)
 				{
-					if (select == 0)
-					{
-						select = 4;
-					}
-					else
-					{
-						select--;
-					}
+					current_max = 0;
 				}
 			}
 		}
 		else
 		{
-			if (selected && (select == 0 || select == 1) && page == 0)
+			for (uint8_t i = ((~((TCC5.CNT/4))+1)%5); i < 1; i--)
 			{
 				if (select == 0)
 				{
-					voltage_max += (TCC5.CNT/4);
-					if (voltage_max > 150)
-					{
-						voltage_max = 150;
-					}
+					select = 4;
 				}
 				else
 				{
-					current_max += (TCC5.CNT/4);
-					if (current_max > 100)
-					{
-						current_max = 100;
-					}
+					select--;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (selected && (select == 0 || select == 1) && page == 0)
+		{
+			if (select == 0)
+			{
+				voltage_max += (TCC5.CNT/4);
+				if (voltage_max > 150)
+				{
+					voltage_max = 150;
 				}
 			}
 			else
 			{
-				select += (TCC5.CNT/4)%5;
+				current_max += (TCC5.CNT/4);
+				if (current_max > 100)
+				{
+					current_max = 100;
+				}
 			}
 		}
-		TCC5.CNT = 0;
+		else
+		{
+			select += (TCC5.CNT/4)%5;
+		}
 	}
-	if (button)
+	if (PORTC.INTFLAGS & PORT_INT3IF_bm)
 	{
-		button = false;
+		PORTC.INTFLAGS = 0;
 		if (select == 2)
 		{
 			src = true;

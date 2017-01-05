@@ -9,6 +9,7 @@
 #ifndef EXTERN_VARIABLES_H_
 #define EXTERN_VARIABLES_H_
 
+extern volatile bool reCalc;
 
 extern uint16_t voltage;
 extern uint16_t current;
@@ -18,7 +19,6 @@ extern uint16_t input_current;
 extern uint16_t voltage_max;
 extern uint16_t current_max;
 extern bool src;
-extern volatile bool button;
 
 extern const uint8_t first[];
 extern const uint8_t second[];
