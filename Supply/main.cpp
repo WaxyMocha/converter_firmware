@@ -40,7 +40,7 @@ int main(void)
 		if (reMake)
 		{
 			reMake = false;
-			//make_screen ();
+			make_screen ();
 		}
 
     }

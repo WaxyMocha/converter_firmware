@@ -18,10 +18,9 @@ extern uint16_t input_current;
 
 extern float voltage_max;
 extern float current_max;
+extern float UVLO;
 extern bool src;
-
-extern const uint8_t first[];
-extern const uint8_t second[];
+extern uint8_t page;
 
 extern uint8_t screen[512];
 extern uint16_t screen_counter;

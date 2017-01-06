@@ -18,6 +18,7 @@ uint16_t input_current = 100;
 
 float voltage_max = 120;
 float current_max = 10;
+float UVLO = 0;
 bool src = false;//true - voltage, false - current
 uint8_t select = 0;//0 - max voltage, 1- max current, 2 - next
 bool selected = false;
