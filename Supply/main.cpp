@@ -21,7 +21,6 @@ volatile bool reCalc = true;
 int main(void)
 {
     Init();
-	
 	bool reMake = true;
     while (1) 
     {

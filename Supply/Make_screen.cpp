@@ -15,7 +15,7 @@ void make_screen ()
 {
 	float voltage_to_display = (voltage/4096)*15;
 	float current_to_display = (current/4096);
-	char temp [8];
+	char temp [4];
 	
 	//TODO: add clear screen
 
