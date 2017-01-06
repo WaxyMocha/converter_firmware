@@ -19,7 +19,7 @@ uint16_t input_current = 100;
 float voltage_max = 120;
 float current_max = 10;
 bool src = false;//true - voltage, false - current
-uint8_t select = 0;//0 - max voltage, 1- max current, 2 - voltage source, 3 - current source, 4 - next
+uint8_t select = 0;//0 - max voltage, 1- max current, 2 - next
 bool selected = false;
 uint8_t page = 0;
 
@@ -83,9 +83,9 @@ void PWM_mode(bool mode) //0- buck 1-boost
 void Encoder_logic ()
 {
 	uint16_t CNT = TCC5.CNT;
-	if (CNT>>15)//greater than 2^8
+	if (CNT>>15)//greater than 2^8 == below 0
 	{
-		if (selected && (select == 0 || select == 1) && page == 0)
+		if (selected && page == 0)
 		{
 			if (select == 0)
 			{
@@ -98,7 +98,7 @@ void Encoder_logic ()
 			else
 			{
 				current_max -= (CNT/4);
-				if (current_max < 100)
+				if (current_max < 0)
 				{
 					current_max = 0;
 				}
@@ -110,7 +110,7 @@ void Encoder_logic ()
 			{
 				if (select == 0)
 				{
-					select = 4;
+					select = 2;
 				}
 				else
 				{
@@ -121,7 +121,7 @@ void Encoder_logic ()
 	}
 	else
 	{
-		if (selected && (select == 0 || select == 1) && page == 0)
+		if (selected && page == 0)
 		{
 			if (select == 0)
 			{
@@ -142,21 +142,23 @@ void Encoder_logic ()
 		}
 		else
 		{
-			select += (CNT/4)%5;
+			for (uint8_t i = ((~((CNT/4))+1)%5); i < 1; i--)
+			{
+				if (select == 2)
+				{
+					select = 0;
+				}
+				else
+				{
+					select++;
+				}
+			}
 		}
 	}
-	if (PORTC.INTFLAGS & PORT_INT3IF_bm)
+	if (PORTC.INTFLAGS & PORT_INT3IF_bm)//interrupt flag for switch
 	{
 		PORTC.INTFLAGS = 0;
 		if (select == 2)
-		{
-			src = true;
-		}
-		else if (select == 3)
-		{
-			src = false;
-		}
-		else if (select == 4)
 		{
 			page = 1;
 		}
