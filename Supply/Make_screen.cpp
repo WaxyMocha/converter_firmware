@@ -18,7 +18,7 @@ void make_screen ()
 	char temp [4];
 	
 	//TODO: add clear screen
-
+	
 	if (page == 0)
 	{
 		Display_char(0, 0, 'V', true, false, 1);
@@ -28,7 +28,7 @@ void make_screen ()
 		Display_text(40, 0, "Max", 1, true, false);
 		Display_text(40, 10, "Max", 1, true, false);
 		Display_text(104, 21, "Next", 1, true, false);
-	} 
+	}
 	else if (page == 1)
 	{
 		Display_text(0, 0, "UVLO", 1, true, false);
@@ -65,7 +65,7 @@ void make_screen ()
 		
 		sprintf(temp, "%f", voltage_to_display/100);
 		Display_text(65, 10, temp, 1, true, false);
-	} 
+	}
 	else if (page == 1)
 	{
 		sprintf(temp, "%f", UVLO);
@@ -78,5 +78,4 @@ void make_screen ()
 	else
 	{
 	}
-
 }
