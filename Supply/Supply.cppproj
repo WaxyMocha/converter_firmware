@@ -157,6 +157,7 @@
   <avrgcccpp.assembler.general.IncludePaths>
     <ListValues>
       <Value>%24(PackRepoDir)\atmel\XMEGAE_DFP\1.0.30\include</Value>
+      <Value>%24(PackRepoDir)\atmel\XMEGAE_DFP\1.2.46\avrasm\inc</Value>
     </ListValues>
   </avrgcccpp.assembler.general.IncludePaths>
   <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
@@ -192,6 +193,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Make_screen.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TEST.s">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
