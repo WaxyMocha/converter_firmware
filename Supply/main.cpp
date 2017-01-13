@@ -6,6 +6,7 @@
  */ 
 
 #include <avr/io.h>
+//#include <avr/iox32e5.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "include/Interrupts.h"
@@ -21,6 +22,70 @@ volatile bool reCalc = true;
 int main(void)
 {
     Init();
+	
+	asm("LDS R16, [280] \n \t;EDMA_CH0_ADDRL");
+	asm("LDS R17, [281] \n  \t;EDMA_CH0_ADDRH");
+
+	asm("LDS R18, [voltage] \n \t");
+	asm("LDS R19, [voltage+1] \n \t");
+
+	asm("CP R16, R18 \n \t");
+	asm("CPC R17, R19 \n \t");
+	asm("BREQ voltage \n \t");
+
+	asm("LDS R18, [current] \n \t");
+	asm("LDS R19, [current+1] \n \t");
+
+	asm("CP R16, R18 \n \t");
+	asm("CPC R17, R19 \n \t");
+	asm("BREQ current \n \t");
+
+	asm("LDS R18, [input_voltage] \n \t");
+	asm("LDS R19, [input_voltage+1] \n \t");
+
+	asm("CP R16, R18 \n \t");
+	asm("CPC R17, R19 \n \t");
+	asm("BREQ input_voltage \n \t");
+		
+	asm("LDS R16, [voltage] \n \t");
+	asm("LDS R17, [voltage+1] \n \t");
+	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
+	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
+	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
+	asm("ORI R16, (0x00<<3) \n \t");
+	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
+	asm("RJMP end \n \t");
+
+	asm("voltage: \n \t");
+	asm("LDS R16, [current] \n \t");
+	asm("LDS R17, [current+1] \n \t");
+	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
+	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
+	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
+	asm("ORI R16, (0x00<<3) \n \t");
+	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
+	asm("RJMP end \n \t");
+
+	asm("current: \n \t");
+	asm("LDS R16, [input_voltage] \n \t");
+	asm("LDS R17, [input_voltage+1] \n \t");
+	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
+	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
+	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
+	asm("ORI R16, (0x00<<3) \n \t");
+	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
+	asm("RJMP end \n \t");
+
+	asm("input_voltage: \n \t");
+	asm("LDS R16, [input_current] \n \t");
+	asm("LDS R17, [input_current+1] \n \t");
+	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
+	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
+	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
+	asm("ORI R16, (0x00<<3) \n \t");
+	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
+	
+	asm("end: \n");
 	
 	bool reMake = true;
     while (1) 
