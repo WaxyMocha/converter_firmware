@@ -5,7 +5,6 @@
  * Created: 2017-01-11 10:35:24
  *  Author: Jackob
  */ 
-
  IN R16, EDMA_CH0_ADDRL
  IN R17, EDMA_CH0_ADDRH
 
@@ -65,3 +64,4 @@
  OUT ADCA_CH0_MUXCTRL, R16
  
  end:
+ RETI

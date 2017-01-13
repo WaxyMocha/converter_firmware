@@ -22,8 +22,6 @@ int main(void)
 {
     Init();
 	
-	#include "TEST.s"
-	
 	bool reMake = true;
     while (1) 
     {
