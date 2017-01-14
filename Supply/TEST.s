@@ -1,67 +1,75 @@
 
 /*
- * TEST.s
+ * TEST.asm
  *
  * Created: 2017-01-11 10:35:24
  *  Author: Jackob
  */ 
- IN R16, EDMA_CH0_ADDRL
- IN R17, EDMA_CH0_ADDRH
+.nolist
+#include "avr/io.h"
+.list
 
- LDS R18, [voltage]
- LDS R19, [voltage+1]
+.org 6
+	RJMP start
 
- CP R16, R18
- CPC R17, R19
- BREQ voltage
+start:
+	PUSH R16
+	PUSH R17
+	PUSH R18
+	PUSH R19
 
- LDS R18, [current]
- LDS R19, [curent+1]
+	 LDS R16, EDMA_CH0_ADDRL ;EDMA_CH0_ADDRL"); //Load low byte of EDMA CH0 ADDR register
+	LDS R17, [281] ;EDMA_CH0_ADDRH");//Load high byte of EDMA CH0 ADDR register
 
- CP R16, R18
- CPC R17, R19
- BREQ current
+	LDS R18, [current] ;//Load low byte of current variable pointer
+	LDS R19, [current+1] ;//Load high byte of current variable pointer
 
- LDS R18, [input_voltage]
- LDS R19, [input_voltage+1]
+	LDS R16, [current] ;//Compare low byte of EDMA and current
+	LDS R17, [current+1] ;//Compare high byte of EDMA and current
+	BREQ current //"Jump" if equal to current label
 
- CP R16, R18
- CPC R17, R19
- BREQ input_voltage
- 
- LDS R16, [voltage]
- LDS R17, [voltage+1]
- OUT EDMA_CH0_ADDRL, R16
- OUT EDMA_CH0_ADDRH, R7
- LDS R16, ADC_CH_MUXPOS_PIN0
- OUT ADCA_CH0_MUXCTRL, R16
- RJMP end
+	LDS R18, [input_voltage] ; //Load low byte of input_voltage variable pointer
+	LDS R19, [input_voltage+1] ;//Load high byte of input_voltage variable pointer
 
- voltage:
- LDS R16, [current]
- LDS R17, [current+1]
- OUT EDMA_CH0_ADDRL, R16
- OUT EDMA_CH0_ADDRH, R7
- LDS R16, ADC_CH_MUXPOS_PIN0
- OUT ADCA_CH0_MUXCTRL, R16
- RJMP end
+	CP R16, R18 ;//Compare low byte of EDMA and input_voltage
+	CPC R17, R19 ;//Compare high byte of EDMA and input_voltage
+	BREQ input_voltage ;//"Jump" if equal input_voltage label
 
- current:
- LDS R16, [input_voltage]
- LDS R17, [input_voltage+1]
- OUT EDMA_CH0_ADDRL, R16
- OUT EDMA_CH0_ADDRH, R7
- LDS R16, ADC_CH_MUXPOS_PIN0
- OUT ADCA_CH0_MUXCTRL, R16
- RJMP end
+	LDS R18, [voltage] ;//Load low byte of voltage variable pointer
+	LDS R19, [voltage+1] ;//Load high byte of voltage variable pointer
 
- input_voltage:
- LDS R16, [input_current]
- LDS R17, [input_current+1]
- OUT EDMA_CH0_ADDRL, R16
- OUT EDMA_CH0_ADDRH, R7
- LDS R16, ADC_CH_MUXPOS_PIN0
- OUT ADCA_CH0_MUXCTRL, R16
- 
- end:
- RETI
+	CP R16, R18 ;//Compare low byte of EDMA and voltage
+	CPC R17, R19 ;//Compare high byte of EDMA and voltage
+	BREQ voltage ;//"Jump" if equal to voltage label
+	
+		// If EDMA_CH0_ADDR equal input_current (all other possibilities was checked) 
+	LDI R16, (0x00<<3) ; ADC_CH_MUXPOS_PIN0_gc");//Load config to register
+	RJMP end ;//Jump to end label
+
+voltage: ;//voltage label
+	LDS R18, [current] ;//Load low byte of current variable pointer
+	LDS R19, [current+1] ;//Load high byte of current variable pointer
+	LDI R16, (0x01<<3) ; ADC_CH_MUXPOS_PIN1_gc");//Load config to register
+	RJMP end ;//Jump to end label
+
+current: ;//current label
+	LDS R18, [input_voltage] ;//Load low byte of input_voltage variable pointer
+	LDS R19, [input_voltage+1] ;//Load high byte of input_voltage variable pointer
+	LDI R16, (0x02<<3) ; ADC_CH_MUXPOS_PIN2_gc");//Load config to register
+	RJMP end ;//Jump to end label
+
+input_voltage: ;//input_voltage label
+	LDS R18, [input_current] ;//Load low byte of input_current variable pointer
+	LDS R19, [input_current+1] ;//Load high byte of input_current variable pointer
+	LDI R16, (0x03<<3) ; ADC_CH_MUXPOS_PIN3_gc");//Load config to register
+	
+end: ;//end label
+	STS [545], R16 ; ADCA_CH0_MUXCTRL");//load R16 register to memory
+
+	STS [280], R18 ; EDMA_CH0_ADDRL");//load R18 register to memory
+	STS [281], R19 ; EDMA_CH0_ADDRH");//load R19 register to memory
+
+	POP R19
+	POP R18
+	POP R17
+	POP R16

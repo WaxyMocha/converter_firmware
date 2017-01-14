@@ -14,79 +14,71 @@
 #include "include/Display.h"
 #include "include/Logic.h"
 #include "include/Make_screen.h"
+//#include "TEST.asm"
 
 void Init ();
+void start();
 
 volatile bool reCalc = true;
 
 int main(void)
 {
     Init();
+    /*
+	asm(".nolist \n \t");
+	//asm(".include \"TEST.asm\" \n \t");
+	asm(".list \n \t");
+	asm("LDS R16, [280] \n \t;EDMA_CH0_ADDRL"); //Load low byte of EDMA CH0 ADDR register
+	asm("LDS R17, [281] \n  \t;EDMA_CH0_ADDRH");//Load high byte of EDMA CH0 ADDR register
+
+	asm("LDS R18, [current] \n \t");//Load low byte of current variable pointer
+	asm("LDS R19, [current+1] \n \t");//Load high byte of current variable pointer
+
+	asm("LDS R16, [current] \n \t");//Compare low byte of EDMA and current
+	asm("LDS R17, [current+1] \n \t");//Compare high byte of EDMA and current
+	asm("BREQ current \n \t");//"Jump" if equal to current label
+
+	asm("LDS R18, [input_voltage] \n \t"); //Load low byte of input_voltage variable pointer
+	asm("LDS R19, [input_voltage+1] \n \t");//Load high byte of input_voltage variable pointer
+
+	asm("CP R16, R18 \n \t");//Compare low byte of EDMA and input_voltage
+	asm("CPC R17, R19 \n \t");//Compare high byte of EDMA and input_voltage
+	asm("BREQ input_voltage \n \t");//"Jump" if equal input_voltage label
+
+	asm("LDS R18, [voltage] \n \t");//Load low byte of voltage variable pointer
+	asm("LDS R19, [voltage+1] \n \t");//Load high byte of voltage variable pointer
+
+	asm("CP R16, R18 \n \t");//Compare low byte of EDMA and voltage
+	asm("CPC R17, R19 \n \t");//Compare high byte of EDMA and voltage
+	asm("BREQ voltage \n \t");//"Jump" if equal to voltage label
 	
-	asm("LDS R16, [280] \n \t;EDMA_CH0_ADDRL");
-	asm("LDS R17, [281] \n  \t;EDMA_CH0_ADDRH");
+	// If EDMA_CH0_ADDR equal input_current (all other possibilities was checked) 
+	asm("LDI R16, (0x00<<3) \n \t; ADC_CH_MUXPOS_PIN0_gc");//Load config to register
+	asm("RJMP end \n \t");//Jump to end label
 
-	asm("LDS R18, [voltage] \n \t");
-	asm("LDS R19, [voltage+1] \n \t");
+	asm("voltage: \n \t");//voltage label
+	asm("LDS R18, [current] \n \t");//Load low byte of current variable pointer
+	asm("LDS R19, [current+1] \n \t");//Load high byte of current variable pointer
+	asm("LDI R16, (0x01<<3) \n \t; ADC_CH_MUXPOS_PIN1_gc");//Load config to register
+	asm("RJMP end \n \t");//Jump to end label
 
-	asm("CP R16, R18 \n \t");
-	asm("CPC R17, R19 \n \t");
-	asm("BREQ voltage \n \t");
+	asm("current: \n \t");//current label
+	asm("LDS R18, [input_voltage] \n \t");//Load low byte of input_voltage variable pointer
+	asm("LDS R19, [input_voltage+1] \n \t");//Load high byte of input_voltage variable pointer
+	asm("LDI R16, (0x02<<3) \n \t; ADC_CH_MUXPOS_PIN2_gc");//Load config to register
+	asm("RJMP end \n \t");//Jump to end label
 
-	asm("LDS R18, [current] \n \t");
-	asm("LDS R19, [current+1] \n \t");
-
-	asm("CP R16, R18 \n \t");
-	asm("CPC R17, R19 \n \t");
-	asm("BREQ current \n \t");
-
-	asm("LDS R18, [input_voltage] \n \t");
-	asm("LDS R19, [input_voltage+1] \n \t");
-
-	asm("CP R16, R18 \n \t");
-	asm("CPC R17, R19 \n \t");
-	asm("BREQ input_voltage \n \t");
-		
-	asm("LDS R16, [voltage] \n \t");
-	asm("LDS R17, [voltage+1] \n \t");
-	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
-	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
-	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
-	asm("ORI R16, (0x00<<3) \n \t");
-	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
-	asm("RJMP end \n \t");
-
-	asm("voltage: \n \t");
-	asm("LDS R16, [current] \n \t");
-	asm("LDS R17, [current+1] \n \t");
-	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
-	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
-	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
-	asm("ORI R16, (0x00<<3) \n \t");
-	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
-	asm("RJMP end \n \t");
-
-	asm("current: \n \t");
-	asm("LDS R16, [input_voltage] \n \t");
-	asm("LDS R17, [input_voltage+1] \n \t");
-	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
-	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
-	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
-	asm("ORI R16, (0x00<<3) \n \t");
-	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
-	asm("RJMP end \n \t");
-
-	asm("input_voltage: \n \t");
-	asm("LDS R16, [input_current] \n \t");
-	asm("LDS R17, [input_current+1] \n \t");
-	asm("STS [280], R16 \n \t; EDMA_CH0_ADDRL");
-	asm("STS [281], R17 \n \t; EDMA_CH0_ADDRH");
-	asm("LDS R16, [545]\n \t; ADCA_CH0_MUXCTRL");
-	asm("ORI R16, (0x00<<3) \n \t");
-	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");
+	asm("input_voltage: \n \t");//input_voltage label
+	asm("LDS R18, [input_current] \n \t");//Load low byte of input_current variable pointer
+	asm("LDS R19, [input_current+1] \n \t");//Load high byte of input_current variable pointer
+	asm("LDI R16, (0x03<<3) \n \t; ADC_CH_MUXPOS_PIN3_gc");//Load config to register
 	
-	asm("end: \n");
-	
+	asm("end: \n");//end label
+	asm("STS [545], R16 \n \t; ADCA_CH0_MUXCTRL");//load R16 register to memory
+
+	asm("STS [280], R18 \n \t; EDMA_CH0_ADDRL");//load R18 register to memory
+	asm("STS [281], R19 \n \t; EDMA_CH0_ADDRH");//load R19 register to memory
+	*/
 	bool reMake = true;
     while (1) 
     {
@@ -223,6 +215,7 @@ ISR (TWIC_TWIM_vect)
 	}
 	TWIC.MASTER.DATA = to_send;
 }
+/*
 ISR(EDMA_CH0_vect)
 {
 	if (EDMA.CH0.ADDR == (uint16_t)&voltage)
@@ -247,4 +240,4 @@ ISR(EDMA_CH0_vect)
 		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;
 	}
 	ADCA.CTRLA |= ADC_START_bm;
-}
+}*/
