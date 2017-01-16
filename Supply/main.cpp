@@ -23,36 +23,6 @@ int main(void)
     Init();
 	cli();
 	bool reMake = true;
-	while (1)
-	{
-		asm(
-			"LDI R16, 0X0 ;EDMA_CH0_ADDRL\n \t"
-			
-			"CPI R16, [voltage]\n \t"
-			"BREQ one\n \t"
-			
-			"CPI R16, [current]\n \t"
-			"BREQ two\n \t"
-			
-			"CPI R16, [input_voltage]\n \t"
-			"BREQ three\n \t"
-			
-			"LDI R16, [voltage]\n \t"
-			"LDI R17, 0X0 ;ADC_CH_MUXPOS_PIN0\n \t"
-			"RJMP end\n \t"
-			
-			"one:\n \t"
-			"RJMP end\n \t"
-			
-			"two:\n \t"
-			"RJMP end\n \t"
-			
-			"three:\n \t"
-			"RJMP end\n \t"
-			
-			"end:\n"
-		);	
-	}
     while (1) 
     {
 		if (reCalc)

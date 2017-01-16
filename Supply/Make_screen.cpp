@@ -10,6 +10,7 @@
 #include "include/Extern_variables.h"
 #include "include/Display.h"
 
+bool drawn = false;
 
 void make_screen ()
 {
@@ -19,7 +20,7 @@ void make_screen ()
 	
 	//TODO: add clear screen
 
-	if (page == 0)
+	if (page == 0 && !drawn)
 	{
 		Display_char(0, 0, 'V', true, false, 1);
 		Display_char(0, 10, 'A', true, false, 1);
@@ -28,8 +29,9 @@ void make_screen ()
 		Display_text(40, 0, "Max", 1, true, false);
 		Display_text(40, 10, "Max", 1, true, false);
 		Display_text(104, 21, "Next", 1, true, false);
+		drawn = true;
 	} 
-	else if (page == 1)
+	else if (page == 1 && !drawn)
 	{
 		Display_text(0, 0, "UVLO", 1, true, false);
 		Display_text(0, 10, "Effectivity", 1, true, false);
@@ -37,13 +39,15 @@ void make_screen ()
 		Display_text(104, 21, "Next", 1, true, false);
 
 		Display_char(80, 10, '%', true, false, 1);
+		drawn = true;
 	}
-	else
+	else if (!drawn)
 	{
 		Display_text(0, 0, "Screen off", 1, true, false);
 		Display_text(0, 10, "Switching", 1, true, false);
 		Display_text(0, 21, "Back", 1, true, false);
 		Display_text(70, 10, "kHz", 1, true, false);
+		drawn = true;
 	}
 
 	if (page == 0)
