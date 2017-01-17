@@ -22,6 +22,7 @@ volatile bool reCalc = true;
 int main(void)
 {
     Init();
+<<<<<<< HEAD
 	
 	asm("LDS R16, [280] \n \t;EDMA_CH0_ADDRL");
 	asm("LDS R17, [281] \n  \t;EDMA_CH0_ADDRH");
@@ -87,6 +88,8 @@ int main(void)
 	
 	asm("end: \n");
 	
+=======
+>>>>>>> encoder
 	bool reMake = true;
     while (1) 
     {
@@ -105,7 +108,7 @@ int main(void)
 		if (reMake)
 		{
 			reMake = false;
-			//make_screen ();
+			make_screen ();
 		}
 
     }
