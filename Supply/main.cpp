@@ -21,7 +21,6 @@ volatile bool reCalc = true;
 int main(void)
 {
     Init();
-	cli();
 	bool reMake = true;
     while (1) 
     {
@@ -120,8 +119,6 @@ void Init ()
 ISR (TWIC_TWIM_vect);
 ISR(EDMA_CH0_vect)
 {
-	
-	/*
 	if (EDMA.CH0.ADDR == (uint16_t)&voltage)
 	{
 		reCalc = true;
@@ -144,6 +141,5 @@ ISR(EDMA_CH0_vect)
 		ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc;
 	}
 	ADCA.CTRLA |= ADC_START_bm;
-	*/
 }
 ISR (PORTC_INT_vect);

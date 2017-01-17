@@ -73,6 +73,7 @@ void Display_text (int x, int y, char * str, uint8_t txt_size, bool eanable, boo
 void Display_int (int x, int y, int data, uint8_t txt_size, bool enable, bool background);
 
 void Display_rect (int x, int y, int w, int h, bool enable);
+void Display_fill_rect (int x, int y, int w, int h, bool enable);
 void Display_fill_circle(int x, int y, int r, bool enable);
 void Display_circle (int x, int y, int r, bool enable);
 void Display_fill_triangle (int x0, int y0, int x1, int y1, int x2, int y2, bool enable);
