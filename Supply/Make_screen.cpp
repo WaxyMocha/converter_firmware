@@ -10,8 +10,6 @@
 #include "include/Extern_variables.h"
 #include "include/Display.h"
 
-bool drawn = false;
-
 void make_screen ()
 {
 	float voltage_to_display = (voltage/4096)*15;
@@ -20,7 +18,7 @@ void make_screen ()
 	
 	//TODO: add clear screen
 
-	if (page == 0 && !drawn)
+	if (page == 0)
 	{
 		Display_char(0, 0, 'V', true, false, 1);
 		Display_char(0, 10, 'A', true, false, 1);
@@ -29,9 +27,8 @@ void make_screen ()
 		Display_text(40, 0, "Max", 1, true, false);
 		Display_text(40, 10, "Max", 1, true, false);
 		Display_text(104, 21, "Next", 1, true, false);
-		drawn = true;
-	} 
-	else if (page == 1 && !drawn)
+	}
+	else if (page == 1)
 	{
 		Display_text(0, 0, "UVLO", 1, true, false);
 		Display_text(0, 10, "Effectivity", 1, true, false);
@@ -39,15 +36,13 @@ void make_screen ()
 		Display_text(104, 21, "Next", 1, true, false);
 
 		Display_char(80, 10, '%', true, false, 1);
-		drawn = true;
 	}
-	else if (!drawn)
+	else
 	{
 		Display_text(0, 0, "Screen off", 1, true, false);
 		Display_text(0, 10, "Switching", 1, true, false);
 		Display_text(0, 21, "Back", 1, true, false);
 		Display_text(70, 10, "kHz", 1, true, false);
-		drawn = true;
 	}
 
 	if (page == 0)
@@ -69,7 +64,7 @@ void make_screen ()
 		
 		sprintf(temp, "%f", voltage_to_display/100);
 		Display_text(65, 10, temp, 1, true, false);
-	} 
+	}
 	else if (page == 1)
 	{
 		sprintf(temp, "%f", UVLO);
@@ -82,5 +77,4 @@ void make_screen ()
 	else
 	{
 	}
-
 }
