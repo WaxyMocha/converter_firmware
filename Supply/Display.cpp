@@ -411,7 +411,7 @@ void Display_int (int x, int y, int data, uint8_t txt_size, bool enable, bool ba
 	Display_text(x, y, itoa(data, buf, 10), txt_size, enable, background);
 }
 
-void Display_fill_rect(int x, int y, int w, int h, bool enable)
+void Display_fill_rect (int x, int y, int w, int h, bool enable)
 {
 	for (int16_t i = x; i<x+w; i++)
 	{
