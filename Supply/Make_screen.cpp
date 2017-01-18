@@ -12,8 +12,8 @@
 
 void make_screen ()
 {
-	float voltage_to_display = (voltage/4096)*15;
-	float current_to_display = (current/4096);
+	double voltage_to_display = (voltage/4096)*15;
+	double current_to_display = (current/4096);
 	char temp [4];
 	
 	//TODO: add clear screen
@@ -70,7 +70,7 @@ void make_screen ()
 		sprintf(temp, "%f", UVLO);
 		Display_text(57, 0, temp, 1, true, false);
 
-		float temp2 = (voltage*current)/(input_voltage*input_current);
+		double temp2 = (voltage*current)/(input_voltage*input_current);
 		sprintf(temp, "%f", temp2);
 		Display_text(15, 10, temp, 1, true, false);
 	}

@@ -16,9 +16,9 @@ extern uint16_t current;
 extern uint16_t input_voltage;
 extern uint16_t input_current;
 
-extern float voltage_max;
-extern float current_max;
-extern float UVLO;
+extern double voltage_max;
+extern double current_max;
+extern double UVLO;
 extern bool src;
 extern uint8_t page;
 
