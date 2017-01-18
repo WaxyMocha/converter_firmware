@@ -17,9 +17,9 @@ uint16_t current = 0;
 uint16_t input_voltage = 1396;
 uint16_t input_current = 100;
 
-float voltage_max = 120;
-float current_max = 10;
-float UVLO = 0;
+double voltage_max = 120;
+double current_max = 10;
+double UVLO = 0;
 bool src = false;//true - voltage, false - current
 bool selected = false;
 bool active = false;
