@@ -18,10 +18,9 @@ void make_screen ()
 	double current_to_display = (current/4096);
 	char temp [4];
 	
-	//TODO: add clear screen
 	if (!drawn)
 	{
-		Display_fill_rect(0, 0, 128, 32, false);//clear screen
+		Display_fill_screen(false);//cls
 		if (page == 0)
 		{
 			Display_char(0, 0, 'V', true, false, 1);
