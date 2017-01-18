@@ -331,6 +331,10 @@ void Display_veritcal_line(int x, int y, int h, bool enable)
 {
 	Display_line(x, y, x, y+h-1, enable);
 }
+void Display_horizontal_line(int x, int y, int w, bool enable)
+{
+	Display_line(x, y, x+w-1, y, enable);
+}
 void Display_bitmap_P (int x, int y, const uint8_t *bitmap, uint8_t w, uint8_t h, bool enable = true)
 {
 	int byteWidth = (w+7)/8;
@@ -348,7 +352,7 @@ void Display_bitmap_P (int x, int y, const uint8_t *bitmap, uint8_t w, uint8_t h
 }
 void Display_fill_screen (bool enable)
 {
-	
+	Display_fill_rect(0, 0, 128, 32, enable);
 }
 
 void Display_char(int x, int y, char c, bool enable, bool background, uint8_t size)
@@ -420,30 +424,8 @@ void Display_fill_rect (int x, int y, int w, int h, bool enable)
 }
 void Display_rect (int x, int y, int w, int h, bool enable)
 {
-	#warning function empty
+	Display_horizontal_line(x, y, w, enable);
+	Display_horizontal_line(x, y+h-1, w, enable);
+	Display_veritcal_line(x, y, h, enable);
+	Display_veritcal_line(x+w-1, y, h, enable);
 }
-void Display_fill_circle(int x, int y, int r, bool enable)
-{
-	#warning function empty
-}
-void Display_circle (int x, int y, int r, bool enable)
-{
-	#warning function empty
-}
-void Display_fill_triangle (int x0, int y0, int x1, int y1, int x2, int y2, bool enable)
-{
-	#warning function empty
-}
-void Display_triangle (int x0, int y0, int x1, int y1, int x2, int y2, bool enable)
-{
-	#warning function empty
-}
-void Display_fill_round_rect (int x, int y, int w, int h, int r, bool enable)
-{
-	#warning function empty
-}
-void Display_round_rect (int x, int y, int w, int h, int r, bool enable)
-{
-	#warning function empty
-}
-

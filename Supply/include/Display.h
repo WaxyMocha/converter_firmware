@@ -67,18 +67,13 @@ void Display_send ();
 void Display_bitmap_P (int x, int y, const uint8_t *bitmap, uint8_t w, uint8_t h, bool enable);
 void Display_line(int x0, int y0, int x1, int y1, bool enable);
 void Display_veritcal_line(int x, int y, int h, bool enable);
-void Display_fill_rect(int x, int y, int w, int h, bool enable);
+void Display_horizontal_line(int x, int y, int w, bool enable);
+void Display_fill_screen (bool enable);
 void Display_char(int x, int y, char c, bool enable, bool background, uint8_t size);
 void Display_text (int x, int y, char * str, uint8_t txt_size, bool eanable, bool background);
 void Display_int (int x, int y, int data, uint8_t txt_size, bool enable, bool background);
 
 void Display_rect (int x, int y, int w, int h, bool enable);
 void Display_fill_rect (int x, int y, int w, int h, bool enable);
-void Display_fill_circle(int x, int y, int r, bool enable);
-void Display_circle (int x, int y, int r, bool enable);
-void Display_fill_triangle (int x0, int y0, int x1, int y1, int x2, int y2, bool enable);
-void Display_triangle (int x0, int y0, int x1, int y1, int x2, int y2, bool enable);
-void Display_fill_round_rect (int x, int y, int w, int h, int r, bool enable);
-void Display_round_rect (int x, int y, int w, int h, int r, bool enable);
 
 #endif /* _Display_H_ */
