@@ -6,7 +6,6 @@
  */ 
 
 #include <avr/io.h>
-//#include <avr/iox32e5.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "include/Interrupts.h"
@@ -28,14 +27,12 @@ int main(void)
     {
 		if (reCalc)
 		{
-			//reMake = true;
-			//reCalc = false;
+			reCalc = false;
 			PWM_control ();
 		}
 		if (TCC5.CNT != 0)
 		{
 			reMake = true;
-			TCC5.CNT = 0;
 			Encoder_logic ();
 		}
 		if (reMake)

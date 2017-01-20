@@ -119,6 +119,7 @@ void PWM_mode(bool mode) //0- buck 1-boost
 void Encoder_logic ()
 {
 	uint16_t CNT = TCC5.CNT;
+	TCC5.CNT = 0;
 	if (CNT != 0)//if user spin encoder
 	{
 		if (!active)//selection is off
@@ -129,16 +130,17 @@ void Encoder_logic ()
 		}
 		else//selection is on
 		{
-			Display_fill_rect(coordinates[page][select][0], coordinates[page][select][1], coordinates[page][select][2], 9, false);//clear old selection
+			Display_fill_rect(coordinates[page][select][0], coordinates[page][select][1], coordinates[page][select][2], 9, false);//clear old selection...
+			Display_rect(coordinates[page][select][0], coordinates[page][select][1], coordinates[page][select][2], 9, true);//...and draw new one
 			rtc = RTC.CNT;
 		}
 	}
 	else
 	{
-		if (RTC.CNT > rtc + 5)//If the elapsed 5 seconds, deselect
+		if (RTC.CNT > rtc + 80)//If the elapsed 5 seconds, deselect
 		{
 			active = false;
-			Display_fill_rect(coordinates[page][select][0], coordinates[page][select][1], coordinates[page][select][2], 9, true);
+			Display_fill_rect(coordinates[page][select][0], coordinates[page][select][1], coordinates[page][select][2], 9, true);//clear selection
 		}
 	}
 	
@@ -150,7 +152,7 @@ void Encoder_logic ()
 			{
 				if (select == 0)
 				{
-					voltage_max -= (CNT/4);//one spin increment or decrement counter by 4 
+					voltage_max -= (CNT/4);//one step increment or decrement counter by 4 
 					if (voltage_max < 0)
 					{
 						voltage_max = 0;
