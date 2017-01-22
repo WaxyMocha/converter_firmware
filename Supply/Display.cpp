@@ -3,6 +3,7 @@
  *
  * Created: 27.12.2016 02:08:33
  *  Author: Jakub
+ * build on the basis of adafruit library 
  */ 
  #include <avr/pgmspace.h>
  #include <avr/interrupt.h>
